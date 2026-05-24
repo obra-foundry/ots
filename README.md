@@ -71,12 +71,12 @@ Same primitives, three substrates, 22 orders of magnitude of cumulant range, no 
 
 | Notebook | Domain | n | Headline |
 | --- | --- | --- | --- |
-| `examples/national_wealth_calibration.ipynb` | US Census PUMS wealth | 1.45 M HHs | κ₃ real/null **20.2×**; sheaf obstructed 64.89 SE |
-| `examples/education_wealth_decoupling.ipynb` | US Census PUMS × education | 3.4 M persons | κ₃ persistence ratio **18.2×** (high/low edu) |
 | `examples/ecg_subgroup_distortion.ipynb` | PTB-XL ECG | 21,799 records | κ₃ Young vs Elderly **11.1×**; sheaf marginal on sex (under-power honestly reported) |
 | `examples/cxr_segmentation_distortion.ipynb` | CheXmask VinDr-CXR | 18,000 images | CTR-CV ratio **1.73×** across mask-quality strata |
 | `examples/delaware_wealth_calibration.ipynb` | US Census PUMS wealth | 4,765 HHs | sheaf valid at n=389 (instrument honestly reports its own under-powering) |
 | `examples/delaware_calibration.ipynb` | US Census PUMS income | 9,876 | calibration baseline; per-component admission demonstrated |
+| `examples/national_wealth_calibration.ipynb` | US Census PUMS wealth | 1.45 M HHs | κ₃ real/null **20.2×**; sheaf obstructed 64.89 SE |
+| `examples/education_wealth_decoupling.ipynb` | US Census PUMS × education | 3.4 M persons | κ₃ persistence ratio **18.2×** (high/low edu) |
 
 Every notebook ships executed. Outputs are in the `.ipynb` cells.
 
