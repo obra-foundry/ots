@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.venv/
+.DS_Store
+.claude/
+.idea/
+.vscode/
+
+# Datasets (see data/README.md for download URLs)
+VinDr-CXR.csv
+data/*
+!data/README.md
