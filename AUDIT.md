@@ -27,7 +27,7 @@
 |---|---|---|---|
 | `third_central_moment` | `X:[n,d] → [d,d,d]` | `K₃[i,j,k] = mean_t Xc[t,i]Xc[t,j]Xc[t,k]`, single `einsum`. | None. |
 | `fourth_central_moment` | `X:[n,d] → [d,d,d,d]` | **True 4th cumulant** (Edgeworth-corrected): `E₄ − 3·perm(Σ⊗Σ)`. Cumulant additivity exact: independent X,Y ⇒ cross-block κ₄ = 0. | None. |
-| `cross_cumulant_residual_perK` | `(X, Y, k∈{3,4}) → [d_x + d_y]` | Returns the **per-component** Frobenius norm of the cross-block of the joint κ_k tensor (within-α and within-β blocks zeroed out). Conformance: **Sturmfels & Zwiernik arXiv:1011.1722**. | `ValueError` if k ∉ {3,4}. |
+| `cross_cumulant_residual_perK` | `(X, Y, k∈{3,4}) → [d_x + d_y]` | Returns the **per-component** Frobenius norm of the cross-block of the joint κ_k tensor (within-α and within-β blocks zeroed out). Conformance: **Zwiernik arXiv:1011.1722**. | `ValueError` if k ∉ {3,4}. |
 | `admit_per_component` | `(X, Y, τ₃, τ₄) → (admit, meta)` | `ADMIT iff min_k ‖κ_k‖ > τ_k` for EACH `k ∈ {3,4}`, strict AND. Aggregate composition (`n3+n4>τ`) is forbidden. | Returns `blocking_component ∈ {None, "k3", "k4"}`. |
 | `admit_per_component_standardized` | `(X, Y, τ₃=0.2, τ₄=0.2) → (admit, meta)` | Z-scores X and Y separately to unit variance, then calls `admit_per_component`. Thresholds are σ-units. | Inherits per-component guard. |
 | `cumulant_difference` | `(X, Y, k) → scalar` | `‖κ_k(X) − κ_k(Y)‖` Frobenius. Two **independent populations**, no equal-n requirement, no row pairing. | None. |
@@ -54,7 +54,7 @@
 | Test file | Property verified | Architectural invariant encoded |
 |---|---|---|
 | `test_admit_per_component.py` | (a) Large κ₃ cannot mask near-zero κ₄ — `blocking_component="k4"` when τ₄ > ‖κ₄‖ even with τ₃ < ‖κ₃‖. (b) Both above τ ⇒ admit. | **Anti-aggregation**: per-component AND gate is enforced; no compositional substitution. |
-| `test_citation_conformance.py` | Every public kernel docstring contains "Conformance" + a specific external anchor (Pozar / Feydy / Chazal / Sturmfels / Curry / Shen / §0.x). | **Authority traceability**: each kernel must cite a verifiable source. |
+| `test_citation_conformance.py` | Every public kernel docstring contains "Conformance" + a specific external anchor (Pozar / Feydy / Chazal / Zwiernik / Curry / Shen / §0.x). | **Authority traceability**: each kernel must cite a verifiable source. |
 | `test_gamma_plus_gamma_star_guard.py` | `metric_warp_factor(1,-1)` returns `(1.0, "metric_warp:gamma_plus_gamma_star_singular")` — never NaN/Inf. | **Singularity quarantine**: divide-by-zero is intercepted and tagged. |
 | `test_kappa_independent_zero.py` | Independent X,Y ⇒ `‖κ_k‖ < 0.15` at n=50000, d=2. Dependent X,Y (Y = X² + noise) ⇒ `‖κ_k‖ > 0.5`. Dependence raises BOTH k=3 and k=4. The threshold of 1e-2 is **openly flagged as statistically infeasible** in the docstring. | **Cumulant additivity** holds at finite-sample limits, AND limitations are flagged in code rather than hidden. |
 | `test_null_gate_silent.py` | Random split of one population through `admit_per_component_standardized` does **not** admit, OR if it does, a `blocking_component` is still reported. | **Null is a soft guard, not a hard test**; gate carries diagnostic metadata under all branches. |

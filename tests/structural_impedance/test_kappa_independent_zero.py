@@ -1,4 +1,4 @@
-"""Cross-cumulant dependence signature (axioms §0.5; Sturmfels–Zwiernik arXiv:1011.1722).
+"""Cross-cumulant dependence signature (axioms §0.5; Zwiernik arXiv:1011.1722).
 
 v3.2 patch: fourth_central_moment now computes the TRUE 4th cumulant tensor
 (Edgeworth-corrected: E_4 minus three Σ⊗Σ permutations). Cumulant additivity

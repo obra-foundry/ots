@@ -121,7 +121,7 @@ The skipped test is `test_sim_no_closed_form::test_runs_and_returns_square_hessi
 
 Every public kernel carries its anchor in the docstring and in `provenance.PROVENANCE`.
 
-* Sturmfels, B., & Zwiernik, P. *Binary cumulant varieties.* arXiv:1011.1722.
+* Zwiernik, P. *L-cumulants, L-cumulant embeddings and algebraic statistics.* arXiv:1011.1722.
 * Curry, J. *Sheaves, Cosheaves and Applications.* PhD thesis, 2014.
 * Feydy, J., Séjourné, T., Vialard, F.-X., Amari, S., Trouvé, A., Peyré, G. *Interpolating between Optimal Transport and MMD using Sinkhorn Divergences.* AISTATS 2019.
 * Shen, Z., Feydy, J., Liu, P., Curiale, A., San José Estépar, R., San José Estépar, R., Niethammer, M. *Accurate Point Cloud Registration with Robust Optimal Transport.* NeurIPS 2020. Prop. 5.1 Eq. 17.

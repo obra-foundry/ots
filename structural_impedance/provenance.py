@@ -1,9 +1,10 @@
 """CODE-U Axiom 4: Provenance Irreversibility.
 
 Every public kernel carries a back-pointer to its derivation chain so the
-decoupling from the upstream substrate is lossless. Vault paths are
-operator-resolvable. Axiom statements inlined so records are meaningful
-without vault access.
+decoupling from the upstream substrate is lossless. The back-pointer and
+origin fields are internal-development markers only; no private-source path
+or content is reproduced here, by design (the source/binary distinction is
+CODE-U Axiom 1).
 Conformance: 1164.CODE-U.1.0 Axiom 4.
 """
 from dataclasses import dataclass
@@ -11,6 +12,7 @@ from typing import Callable
 
 from structural_impedance import cumulant as _cm
 from structural_impedance import gamma_correction as _gc
+from structural_impedance import lmoment as _lm
 from structural_impedance import sheaf_gluing as _sg
 from structural_impedance import sinkhorn as _sk
 
@@ -33,10 +35,12 @@ def _r(fn_name, module, secular, tier, vault, chain, axiom, origin):
 
 _GC = "structural_impedance.gamma_correction"
 _CM = "structural_impedance.cumulant"
+_LM = "structural_impedance.lmoment"
 _SG = "structural_impedance.sheaf_gluing"
 _SK = "structural_impedance.sinkhorn"
 _SIGDY = "internal-development-record"
 _ADT = "internal-development-record"
+_CEP = "internal-development-record"
 _CGF = "internal-development-record"
 _FAF = "internal-development-record"
 _DOUBT = "internal design rationale"
@@ -66,21 +70,35 @@ PROVENANCE: "dict[Callable, ProvenanceRecord]" = {
     _gc.gamma_eff_from_kurtosis: _r(
         "gamma_eff_from_kurtosis", _GC, "internal methodology (no external citation)", 2,
         _FAF, "SD-v1.0::kurtosis-coupling",
-        "Effective Gamma is a tanh of kappa_4 / kappa_2^2 centered at R_crit=4.458.", _DIVERGE),
+        "Effective Gamma is a tanh of kappa_4 / kappa_2^2 against tuning-convention "
+        "anchors (synthetic-substrate fit, upper-bound only; raw-R magnitude path "
+        "deprecated in favor of gamma_eff_from_rank).", _DIVERGE),
+    _gc.gamma_eff_from_rank: _r(
+        "gamma_eff_from_rank", _GC,
+        "Lehmann & Romano, Testing Statistical Hypotheses, Ch. 15 (permutation tests)", 2,
+        _FAF, "SD-v1.0::kurtosis-coupling-null-calibrated",
+        "Effective Gamma from a permutation-null rank of R: uniform under the null, "
+        "distribution-free, n-stable. Detector-compliant replacement for the raw-R path.",
+        _DIVERGE),
     _gc.alpha_modulation: _r(
         "alpha_modulation", _GC, "internal methodology (no external citation)", 2,
         _SIGDY, "SD-v1.0::phi-alpha-coupling",
         "alpha(kappa) = Phi(Gamma_eff(kappa), gamma_star). Composition.", _LANG),
+    _gc.alpha_modulation_from_rank: _r(
+        "alpha_modulation_from_rank", _GC,
+        "Lehmann & Romano, Testing Statistical Hypotheses, Ch. 15 (permutation tests)", 2,
+        _SIGDY, "SD-v1.0::phi-alpha-coupling-null-calibrated",
+        "alpha from a permutation-null rank: Phi(Gamma_eff(rank), gamma_star).", _LANG),
     _cm.third_central_moment: _r(
-        "third_central_moment", _CM, "standard cumulant; Sturmfels-Zwiernik arXiv:1011.1722", 4,
+        "third_central_moment", _CM, "standard cumulant; Zwiernik arXiv:1011.1722", 4,
         _ADT, "IC-v1.0::third-order-tensor",
         "K_3[i,j,k] = mean_t Xc[t,i] Xc[t,j] Xc[t,k]. Single einsum, no aggregation.", _DIVERGE),
     _cm.fourth_central_moment: _r(
-        "fourth_central_moment", _CM, "Sturmfels & Zwiernik arXiv:1011.1722", 4,
+        "fourth_central_moment", _CM, "Zwiernik arXiv:1011.1722", 4,
         _ADT, "IC-v1.0::edgeworth-corrected-kappa4",
         "True 4th cumulant with Edgeworth correction. Independent X,Y => cross-block = 0.", _LANG),
     _cm.cross_cumulant_residual_perK: _r(
-        "cross_cumulant_residual_perK", _CM, "Sturmfels & Zwiernik arXiv:1011.1722", 4,
+        "cross_cumulant_residual_perK", _CM, "Zwiernik arXiv:1011.1722", 4,
         _ADT, "IC-v1.0::cross-block-dependence-signature",
         "Per-component cross-block Frobenius norm. Returns vector, never aggregated.", _DECODE),
     _cm.admit_per_component: _r(
@@ -92,7 +110,7 @@ PROVENANCE: "dict[Callable, ProvenanceRecord]" = {
         _ADT, "IC-v1.0::sigma-unit-noise-floor",
         "Z-scored per-component gate. Sigma-unit thresholds. Noise-floor refusal.", _DOUBT),
     _cm.cumulant_difference: _r(
-        "cumulant_difference", _CM, "Sturmfels & Zwiernik arXiv:1011.1722", 4,
+        "cumulant_difference", _CM, "Zwiernik arXiv:1011.1722", 4,
         _ADT, "IC-v1.0::marginal-cumulant-divergence",
         "Frobenius norm of marginal kappa_k difference. No equal-n requirement.", _DECODE),
     _sg.cocycle_disagreement: _r(
@@ -113,9 +131,21 @@ PROVENANCE: "dict[Callable, ProvenanceRecord]" = {
         _FAF, "FR-v1.0::implicit-diff-SIM",
         "SIM Hessian via implicit diff. No closed-form, no PSD clamping. Non-PD logged.", _DOUBT),
     _sk.kappa_sinkhorn_per_component: _r(
-        "kappa_sinkhorn_per_component", _SK, "Sturmfels & Zwiernik arXiv:1011.1722", 4,
+        "kappa_sinkhorn_per_component", _SK, "Zwiernik arXiv:1011.1722", 4,
         _ADT, "IC-v1.0::sinkhorn-per-component",
         "Per-component kappa residuals for joint coupling. Dict, never concatenated.", _DIVERGE),
+    _lm.sample_lmoments: _r(
+        "sample_lmoments", _LM, "Hosking, JRSS-B 52(1) 1990, 105-124", 4,
+        _CEP, "LM-v1.0::heavy-tail-stable-shape",
+        "Unbiased PWM L-moments; tau3/tau4 exist whenever the mean exists "
+        "(alpha > 1), bounded; the finite invariant of the same tail.", _LANG),
+    _lm.aggregation_contrast_test: _r(
+        "aggregation_contrast_test", _LM, "Hosking, JRSS-B 52(1) 1990; "
+        "Phipson & Smith, SAGMB 9(1) 2010", 4,
+        _CEP, "LM-v1.0::aggregation-contrast-null-calibrated",
+        "Signed (pooling distortion) and dispersion (between-group divergence) "
+        "tau contrasts under a cluster-restricted permutation null. Four channels "
+        "read jointly; composite scalar forbidden.", _DIVERGE),
 }
 
 

@@ -59,17 +59,56 @@ def phi_modulation(Gamma: complex, gamma_star: "complex | None") -> float:
 def gamma_eff_from_kurtosis(kappa_2: float, kappa_4: float, Gamma_0: complex,
                             R_crit: float = 4.458, R_scale: float = 2.094) -> complex:
     """Γ_eff(κ_local) = Γ₀·tanh((R - R_crit)/R_scale), R = κ₄/max(κ₂², 1e-12).
-    Conformance: axioms §0.6; FAF-W3 OTS2 canonical anchors
-    (R_crit_A=4.458, R_crit_B=6.100, R_scale=2.094, LOCKED CANONICAL)."""
+    Conformance: axioms §0.6; FAF-W3 anchors.
+
+    CAVEAT (magnitude use; prefer gamma_eff_from_rank). This function consumes
+    the NUMERICAL VALUE of R, so its output inherits the bias and variance of
+    the sample-kurtosis estimator: downward-biased under heavy tails at finite
+    n (variance governed by 8th moments), so the effective threshold drifts
+    with sample size -- the same population modulates differently at different
+    n. The default constants are TUNING CONVENTIONS, not derived quantities:
+    empirically fitted on synthetic Trivedi-class substrate (FAF-W3 W3
+    calibration, Day-1148), documented in the source program as "upper-bound
+    only; real-world thresholds may differ by an order of magnitude"
+    (non-Gaussian regime-shift math spec §2.3/§3.1). R_scale numerically
+    matches 2π/3 to four digits; no closed-form derivation exists for either
+    constant. For n-stable, distribution-free behavior feed a permutation rank
+    via gamma_eff_from_rank instead."""
     R = kappa_4 / max(kappa_2 ** 2, 1e-12)
     scale = float(np.tanh((R - R_crit) / R_scale))
     return Gamma_0 * scale
+
+
+def gamma_eff_from_rank(null_rank: float, Gamma_0: complex) -> complex:
+    """Γ_eff = Γ₀·(2·rank − 1), rank ∈ [0,1] the percentile of the observed R
+    against a permutation/resampling null (e.g. group-label permutation).
+
+    Null-calibrated replacement for gamma_eff_from_kurtosis: the rank is
+    uniform under the null and distribution-free, so the modulation is stable
+    across sample sizes and immune to the heavy-tail bias of the raw-R path.
+    rank 0.5 (null-typical) → Γ_eff = 0; rank → 1 (R far above null) → +Γ₀;
+    rank → 0 (R far below null) → −Γ₀. Detector-compliant: the input is a
+    calibrated comparison against a null, not a raw magnitude.
+    Conformance: axioms §0.6; permutation-rank calibration per Lehmann &
+    Romano, Testing Statistical Hypotheses, Ch. 15 (permutation tests)."""
+    r = min(1.0, max(0.0, float(null_rank)))
+    return Gamma_0 * (2.0 * r - 1.0)
 
 
 def alpha_modulation(kappa_2: float, kappa_4: float, Gamma_0: complex,
                      gamma_star: "complex | None",
                      R_crit: float = 4.458, R_scale: float = 2.094) -> float:
     """α(κ_local) = Φ(Γ_eff(κ_local), γ*). Composes gamma_eff_from_kurtosis then phi_modulation.
-    Conformance: axioms §0.6 Φ↔α coupling (CncKernelMonitorAgent surface)."""
+    Conformance: axioms §0.6 Φ↔α coupling (CncKernelMonitorAgent surface).
+    Inherits the raw-R magnitude caveat of gamma_eff_from_kurtosis; prefer
+    alpha_modulation_from_rank for n-stable behavior."""
     Gamma_eff = gamma_eff_from_kurtosis(kappa_2, kappa_4, Gamma_0, R_crit, R_scale)
     return phi_modulation(Gamma_eff, gamma_star)
+
+
+def alpha_modulation_from_rank(null_rank: float, Gamma_0: complex,
+                               gamma_star: "complex | None") -> float:
+    """α = Φ(Γ_eff(rank), γ*). Null-calibrated composition: gamma_eff_from_rank
+    then phi_modulation. Conformance: axioms §0.6 Φ↔α coupling; permutation-rank
+    calibration per Lehmann & Romano Ch. 15."""
+    return phi_modulation(gamma_eff_from_rank(null_rank, Gamma_0), gamma_star)

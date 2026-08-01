@@ -107,7 +107,7 @@ def kappa_sinkhorn_per_component(x: torch.Tensor, y: torch.Tensor
                                  ) -> "dict[str, torch.Tensor]":
     """Per-component κ residuals for the joint coupling. Returns
     {'k3': [...], 'k4': [...]} — NOT concatenated, NOT aggregated (axioms §0.5.1).
-    Conformance: Sturmfels & Zwiernik arXiv:1011.1722 (via cross_cumulant_residual_perK)."""
+    Conformance: Zwiernik arXiv:1011.1722 (via cross_cumulant_residual_perK)."""
     return {
         "k3": cross_cumulant_residual_perK(x, y, 3),
         "k4": cross_cumulant_residual_perK(x, y, 4),

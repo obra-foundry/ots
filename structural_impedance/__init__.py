@@ -6,6 +6,10 @@ from structural_impedance.cumulant import (
     fourth_central_moment,
     third_central_moment,
 )
+from structural_impedance.lmoment import (
+    aggregation_contrast_test,
+    sample_lmoments,
+)
 from structural_impedance.sheaf_gluing import (
     cocycle_disagreement,
     sheaf_status_and_kappa,
@@ -33,6 +37,11 @@ from structural_impedance.reclamation import (
     reclaim_sheaf,
     reclamation_test,
 )
+from structural_impedance.subgroup_kurtosis import (
+    decompose_m4,
+    joint_a24_verdict,
+    subgroup_kurtosis_audit,
+)
 
 __all__ = [
     # Numerical primitives
@@ -44,6 +53,8 @@ __all__ = [
     "fourth_central_moment",
     "cocycle_disagreement",
     "sheaf_status_and_kappa",
+    "sample_lmoments",
+    "aggregation_contrast_test",
     # CODE-U Axiom 4 provenance
     "PROVENANCE",
     "ProvenanceRecord",
@@ -63,4 +74,8 @@ __all__ = [
     "reclaim_cumulant",
     "reclaim_sheaf",
     "reclaim_admission",
+    # A24 subgroup higher-order cumulant audit
+    "subgroup_kurtosis_audit",
+    "joint_a24_verdict",
+    "decompose_m4",
 ]

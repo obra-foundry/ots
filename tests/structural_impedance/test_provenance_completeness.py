@@ -13,6 +13,8 @@ _NUMERICAL_KERNELS = [
     si.fourth_central_moment,
     si.cocycle_disagreement,
     si.sheaf_status_and_kappa,
+    si.sample_lmoments,
+    si.aggregation_contrast_test,
 ]
 
 
@@ -22,6 +24,7 @@ def test_every_numerical_kernel_has_provenance():
         assert rec.fn_name == fn.__name__
         assert rec.secular_anchor
         assert rec.vault_path
+        assert not rec.vault_path.startswith("Æ")  # compile-out guard: no private-vault paths
         assert rec.derivation_chain_id
         assert rec.axiom_statement
         assert rec.origin_anchor
